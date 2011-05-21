@@ -41,7 +41,7 @@ class SolitaireCipher
 
   def initialize(text) 
     @text = text
-    @keystream = Keystream.new
+    @deck = Deck.new
   end
 
   def normalize
@@ -75,29 +75,26 @@ class SolitaireCipher
   end
 
   def next_cipher
-    @keystream.next_key
+    @deck.next_key
   end
 
   def encrypt
-    normalize
-    cipher_keys
-
-    c = Array.new
-    a = SolitaireCipher.to_numbers(@normalized)
-    b = SolitaireCipher.to_numbers(@cipher_keys)
-    a.collect!{|x| x.split(/\s/) }.flatten!
-    b.collect!{|x| x.split(/\s/) }.flatten!
-
-    b.each_index{ |idx| 
-      result = (a[idx].to_i + b[idx].to_i)
-      c[idx] = result - ((result / 26) * 26)
+    cipher{ |a, b|
+      result = a + b
+      result - ((result / 26) * 26)
     }
-
-    letters = SolitaireCipher.to_letters(c).join("")
-    to_words(letters)
   end
 
   def decrypt
+   cipher{|a, b| 
+      if(a <= b)
+        a = a + 26
+      end
+      a - b
+    }
+  end
+
+  def cipher 
     normalize 
     cipher_keys
 
@@ -109,10 +106,7 @@ class SolitaireCipher
     b.collect!{|x| x.split(/\s/).collect{|y| y.to_i }}.flatten!
 
     b.each_index{ |idx| 
-      if(a[idx] <= b[idx]) 
-        a[idx] = a[idx] + 26
-      end
-      c[idx] = (a[idx] - b[idx])
+      c[idx] = yield(a[idx], b[idx])
     }
 
     letters = SolitaireCipher.to_letters(c).join("")
@@ -125,7 +119,7 @@ class SolitaireCipher
 
 end
 
-class Keystream 
+class Deck 
 
   attr_reader :cards
   

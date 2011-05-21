@@ -58,11 +58,9 @@ class TestSolitaireCipher < Test::Unit::TestCase
   end
 
   def test_decrypt
-    sc = SolitaireCipher.new("GLNCQ MJAFF FVOMB JIYCB")
-    assert_equal(%w(CODEI NRUBY LIVEL ONGER), sc.decrypt)
-
-    puts SolitaireCipher.new("CLEPK HHNIY CFPWH FDFEH").decrypt
-    puts SolitaireCipher.new("ABVAW LWZSY OORYK DUPVH").decrypt
+    assert_equal(%w(CODEI NRUBY LIVEL ONGER), SolitaireCipher.new("GLNCQ MJAFF FVOMB JIYCB").decrypt)
+    assert_equal(%w(YOURC IPHER ISWOR KINGX), SolitaireCipher.new("CLEPK HHNIY CFPWH FDFEH").decrypt)
+    assert_equal(%w(WELCO METOR UBYQU IZXXX), SolitaireCipher.new("ABVAW LWZSY OORYK DUPVH").decrypt)
   end
 
   def test_keystream
