@@ -22,27 +22,10 @@ class TestSolitaireCipher < Test::Unit::TestCase
     assert_equal(%w{HIXXX}, cipher.normalize)
   end
 
-  def test_swap
-    a = [1,2,3,4,5]
-    assert_equal([5,1,2,3,4], a.swap(5))
-    #index out of bounds should have no effect
-    assert_equal([5,1,2,3,4], a.swap(-1))
-
-    assert_equal([5,2,1,3,4], a.swap(1))
-
-    assert_equal([5,1,2,3,4], a.swap(2))
-
-    #brings us back to normal
-    assert_equal([1,2,3,4,5], a.swap(5, 4))
-
-    #shifting a card from the just below the end two spots
-    assert_equal([4,1,2,3,5], a.swap(4, 2))
-
-    #brings us back to normal
-    assert_equal([1,2,3,4,5], a.swap(4, 3))
-
-    #shifting a card from the end two spots
-    assert_equal([1,5,2,3,4], a.swap(5, 2))
+  def test_move
+    d = Deck.new
+    d.next_key
+    d.next_key
   end
 
   def test_to_letter
@@ -73,6 +56,5 @@ class TestSolitaireCipher < Test::Unit::TestCase
 
     assert_equal(keys, output)
   end
-
 
 end

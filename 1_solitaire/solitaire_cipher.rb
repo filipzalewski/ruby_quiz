@@ -101,9 +101,12 @@ class SolitaireCipher
     c = Array.new
     a = SolitaireCipher.to_numbers(@normalized)
     b = SolitaireCipher.to_numbers(@cipher_keys)
-
-    a.collect!{|x| x.split(/\s/).collect{|y| y.to_i }}.flatten!
-    b.collect!{|x| x.split(/\s/).collect{|y| y.to_i }}.flatten!
+    [a, b].each{ |text|
+      text.collect!{|x| 
+        x.split(/\s/).collect{
+          |y| y.to_i }
+      }.flatten!
+    }
 
     b.each_index{ |idx| 
       c[idx] = yield(a[idx], b[idx])
@@ -133,32 +136,33 @@ class Deck
   end
 
   def move(card, places)
-    @cards.swap(card, places)
+    idx = @cards.index(card)
+    pos = idx + places < @cards.length ? idx + places : idx + places - @cards.length + 1
+    @cards.insert(pos, @cards.delete_at(idx))
+    @cards.compact!
   end
 
   def triple_cut
-    a_idx = @cards.index("A")
-    b_idx = @cards.index("B")
+    a = @cards.index("A")
+    b = @cards.index("B")
 
-    top = a_idx < b_idx ? a_idx : b_idx
-    bottom = a_idx == top ? b_idx : a_idx
+    a,b = b,a if a > b
 
-    bottom_slice = @cards.slice!(bottom + 1, 54 - bottom)
-    top_slice = @cards.slice!(0,top)
+    bottom_slice = @cards.slice!(b + 1, 54 - b)
+    top_slice = @cards.slice!(0,a)
 
     @cards.insert(0, bottom_slice)
     @cards.push(top_slice)
     
     @cards.flatten!
-
   end
 
   def move_a 
-    is_last("A") ? self.move("A", 2) : self.move("A", 1)
+    self.move("A", 1)
   end
 
   def move_b
-    is_last("B") || is_second_last("B") ? self.move("B", 3) : self.move("B", 2)
+    self.move("B", 2)
   end
 
   def count_cut
@@ -169,15 +173,6 @@ class Deck
       @cards.flatten!
     end
     @cards << last 
-  end
-
-  def is_last(card)
-    @cards.index(card) == @cards.length - 1
-  end
-
-  def is_second_last(card)
-    (@cards.index(card) == @cards.length - 1) ||
-      (@cards.index(card) == @cards.length - 2)
   end
 
   def is_joker(card)
@@ -194,38 +189,3 @@ class Deck
   end
 
 end
-
-class Array
-  
-  def swap(el, *args)
-
-    if args.size > 0
-      places = args[0]
-      if places < 1 || places > self.length - 1
-        self
-      end
-    end
-
-    idx = self.index(el)
-
-    if idx == nil
-      return self 
-    end
-
-    if idx < self.length
-      if idx == self.length - 1
-        insert(0, pop)
-      elsif
-        self[idx, 2] = slice(idx, 2).reverse
-      end
-    end
-
-    if args.size > 0 && args[0] > 1
-      swap(el, args[0] -= 1)
-    end
-
-    self
-  end
-
-end
-
