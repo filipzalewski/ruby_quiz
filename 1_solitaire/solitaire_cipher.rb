@@ -69,17 +69,13 @@ class SolitaireCipher
 
   def encrypt
     cipher{ |a, b|
-      result = a + b
-      result - ((result / 26) * 26)
+      (a + b) - (((a + b) / 26) * 26)
     }
   end
 
   def decrypt
    cipher{|a, b| 
-      if(a <= b)
-        a = a + 26
-      end
-      a - b
+      a <= b ? a + 26 - b : a - b
     }
   end
 
@@ -137,13 +133,9 @@ class Deck
 
     a,b = b,a if a > b
 
-    bottom_slice = @cards.slice!(b + 1, 54 - b)
-    top_slice = @cards.slice!(0,a)
-
-    @cards.insert(0, bottom_slice)
-    @cards.push(top_slice)
-    
-    @cards.flatten!
+    @cards = @cards[b + 1..53]
+      .push(@cards[a..b])
+      .push(@cards[0..a-1]).flatten!
   end
 
   def count_cut
