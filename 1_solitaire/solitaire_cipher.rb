@@ -1,24 +1,13 @@
 class SolitaireCipher
 
-  @@letters = Hash.new
   attr_accessor :text
 
-  def self.letters
-    if @@letters.empty? 
-      @@letters = Hash.new
-      letters = ('A'..'Z').to_a
-      letters.each_index{ |idx| 
-        @@letters[letters[idx]] = idx + 1
-      }
-    end
-    @@letters
-  end
-
   def self.to_numbers(words)
+    letters = ('A'..'Z').to_a
     numbers = words.map{|word|
       trans = String.new
       word.chars { |letter| 
-        trans << self.letters[letter].to_s+" "
+        trans << (letters.index(letter) + 1).to_s+" "
       }
       trans.strip!
     }
@@ -60,7 +49,7 @@ class SolitaireCipher
     @normalized
   end
 
-  def cipher_keys
+  def generate_cipher_keys
     keys = String.new
 
     while keys.size < (@normalized.size * 5) do
@@ -96,7 +85,7 @@ class SolitaireCipher
 
   def cipher 
     normalize 
-    cipher_keys
+    generate_cipher_keys
 
     c = Array.new
     a = SolitaireCipher.to_numbers(@normalized)
@@ -157,14 +146,6 @@ class Deck
     @cards.flatten!
   end
 
-  def move_a 
-    self.move("A", 1)
-  end
-
-  def move_b
-    self.move("B", 2)
-  end
-
   def count_cut
     last = @cards.pop
     if(!is_joker(last))
@@ -180,8 +161,8 @@ class Deck
   end
 
   def next_key 
-    move_a
-    move_b
+    self.move("A", 1)
+    self.move("B", 2)
     triple_cut
     count_cut
     output = is_joker(cards[0]) ? cards[53] : cards[cards[0]]
