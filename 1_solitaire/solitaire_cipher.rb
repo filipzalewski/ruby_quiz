@@ -16,16 +16,13 @@ class SolitaireCipher
 
   def self.to_letters(numbers)
     alphabet = ('A'..'Z').to_a
-
-    letters = numbers.map{|number|
+    numbers.map!{|number|
       alphabet[number.to_i - 1]
     }
-    letters 
   end
 
   def self.to_letter(number)
-    number = number - ((number / 26) * 26)
-    to_letters([number])[0]
+    to_letters([number - ((number / 26) * 26)])[0]
   end
 
   def initialize(text) 
@@ -153,8 +150,8 @@ class Deck
   end
 
   def next_key 
-    self.move("A", 1)
-    self.move("B", 2)
+    move("A", 1)
+    move("B", 2)
     triple_cut
     count_cut
     output = is_joker(cards[0]) ? cards[53] : cards[cards[0]]
